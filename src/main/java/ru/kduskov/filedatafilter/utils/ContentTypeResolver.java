@@ -5,16 +5,16 @@ import ru.kduskov.filedatafilter.enums.ContentType;
 public class ContentTypeResolver {
 
     public static ContentType resolveType(String input) {
-        if(isInt(input))
-            return ContentType.INT;
+        if(isLong(input))
+            return ContentType.LONG;
         if (isFloat(input))
             return ContentType.FLOAT;
         return ContentType.STRING;
     }
 
-    private static boolean isInt(String input) {
+    private static boolean isLong(String input) {
         try {
-            Integer.parseInt(input);
+            Long.parseLong(input);
             return true;
         }catch (NumberFormatException e){
             return false;

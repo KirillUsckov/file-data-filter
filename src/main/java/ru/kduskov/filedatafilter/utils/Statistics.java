@@ -1,16 +1,12 @@
 package ru.kduskov.filedatafilter.utils;
 
-import ru.kduskov.filedatafilter.enums.ContentType;
 import ru.kduskov.filedatafilter.enums.ReportType;
 import ru.kduskov.filedatafilter.models.stat.FloatStat;
-import ru.kduskov.filedatafilter.models.stat.IntStat;
 import ru.kduskov.filedatafilter.models.stat.StringStat;
+import ru.kduskov.filedatafilter.models.stat.LongStat;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 import static java.lang.String.format;
 
@@ -18,13 +14,13 @@ public class Statistics {
     private static Statistics instance;
     private ReportType reportType;
     private StringStat stringStat;
-    private IntStat intStat;
+    private LongStat longStat;
     private FloatStat floatStat;
 
     private Statistics(ReportType reportType) {
         this.reportType = reportType;
         this.stringStat = new StringStat();
-        this.intStat = new IntStat();
+        this.longStat = new LongStat();
         this.floatStat = new FloatStat();
     }
 
@@ -49,13 +45,13 @@ public class Statistics {
         }
     }
 
-    public void analyzeInts(List<Integer> ints) {
-        this.intStat.setAmount(ints.size());
+    public void analyzeLongs(List<Long> longs) {
+        this.longStat.setAmount(longs.size());
         if (reportType == ReportType.FULL) {
-            this.intStat.setMin(ints.stream().mapToInt(Integer::valueOf).min().orElseThrow());
-            this.intStat.setMax(ints.stream().mapToInt(Integer::valueOf).max().orElseThrow());
-            this.intStat.setSum(ints.stream().mapToInt(Integer::valueOf).sum());
-            this.intStat.setAvg(ints.stream().mapToInt(Integer::valueOf).average().orElseThrow());
+            this.longStat.setMin(longs.stream().mapToLong(Long::valueOf).min().orElseThrow());
+            this.longStat.setMax(longs.stream().mapToLong(Long::valueOf).max().orElseThrow());
+            this.longStat.setSum(longs.stream().mapToLong(Long::valueOf).sum());
+            this.longStat.setAvg(longs.stream().mapToLong(Long::valueOf).average().orElseThrow());
         }
     }
 
@@ -74,14 +70,14 @@ public class Statistics {
             return format(
                     "Strings count : %s%nInts count: %s%nFloats count: %s",
                     stringStat.getAmount(),
-                    intStat.getAmount(),
+                    longStat.getAmount(),
                     floatStat.getAmount());
         } else {
             return format("Strings data:%n\tcount: %s, min length: %s, max length: %s%n" +
                     "Ints data:%n\tcount: %s, min value: %s, max value: %s, avg value: %s, sum: %s%n" +
                     "Floats data:%n\tcount: %s, min value: %s, max value: %s, avg value: %s, sum: %s",
                     stringStat.getAmount(), stringStat.getMinLength(), stringStat.getMaxLength(),
-                    intStat.getAmount(), intStat.getMin(), intStat.getMax(), intStat.getAvg(), intStat.getSum(),
+                    longStat.getAmount(), longStat.getMin(), longStat.getMax(), longStat.getAvg(), longStat.getSum(),
                     floatStat.getAmount(), floatStat.getMin(), floatStat.getMax(), floatStat.getAvg(), floatStat.getSum());
         }
     }
