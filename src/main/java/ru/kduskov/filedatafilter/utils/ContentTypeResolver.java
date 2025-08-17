@@ -23,10 +23,11 @@ public class ContentTypeResolver {
 
     private static boolean isFloat(String input) {
         try {
-            Float f = Float.parseFloat(input);
-            return !f.isNaN();
-        }catch (NumberFormatException e){
+            float f = Float.parseFloat(input);
+            return !Float.isNaN(f);
+        } catch (NumberFormatException e) {
             return false;
         }
     }
+
 }
