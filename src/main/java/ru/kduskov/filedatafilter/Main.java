@@ -47,13 +47,13 @@ public class Main {
         ResultModel resultModel = getResultModel(options);
 
         List<String> strings = new ArrayList<>();
-        List<Integer> ints = new ArrayList<>();
+        List<Long> longs = new ArrayList<>();
         List<Float> floats = new ArrayList<>();
         List<String> missingFiles = new ArrayList<>();
         List<String> failedFiles = new ArrayList<>();
 
         for (String fileName : fileNames) {
-            FileProcessingStatus status = FileParser.parseInLists(fileName, strings, ints, floats);
+            FileProcessingStatus status = FileParser.parseInLists(fileName, strings, longs, floats);
             if (status == FileProcessingStatus.FILE_IS_MISSING)
                 missingFiles.add(fileName);
             else if (status == FileProcessingStatus.FAILED_TO_PROCESS)
@@ -69,16 +69,16 @@ public class Main {
             System.exit(2);
         }
 
-        writeDataInFiles(resultModel, strings, floats, ints);
+        writeDataInFiles(resultModel, strings, floats, longs);
 
-        analyzeStatistics(resultModel, strings, floats, ints);
+        analyzeStatistics(resultModel, strings, floats, longs);
 
         int exitCode = (!failedFiles.isEmpty()) ? 1 :
                 (!missingFiles.isEmpty()) ? 1 : 0;
         System.exit(exitCode);
     }
 
-    private static void writeDataInFiles(ResultModel resultModel, List<String> strings, List<Float> floats, List<Integer> ints) {
+    private static void writeDataInFiles(ResultModel resultModel, List<String> strings, List<Float> floats, List<Long> longs) {
         String filesPath = resultModel.getResultPath();
         filesPath = (filesPath == null) ? System.getProperty("user.dir") : filesPath;
 
@@ -90,9 +90,9 @@ public class Main {
                 log.error(" Strings file wasn't written: " + path);
             }
         }
-        if (!ints.isEmpty()) {
+        if (!longs.isEmpty()) {
             path = Path.of(filesPath, resultModel.getFilesPrefix() + INT_FILE_NAME);
-            if (!FileUtils.writeListToFile(resultModel.getWriteMode(), path, ints)) {
+            if (!FileUtils.writeListToFile(resultModel.getWriteMode(), path, longs)) {
                 log.error(" Ints file wasn't written: " + path);
             }
         }
@@ -104,12 +104,12 @@ public class Main {
         }
     }
 
-    private static void analyzeStatistics(ResultModel resultModel, List<String> strings, List<Float> floats, List<Integer> ints) {
+    private static void analyzeStatistics(ResultModel resultModel, List<String> strings, List<Float> floats, List<Long> longs) {
         if (resultModel.getReportType() != null) {
             Statistics stats = Statistics.getInstance(resultModel.getReportType());
             stats.analyzeStrings(strings);
             stats.analyzeFloat(floats);
-            stats.analyzeInts(ints);
+            stats.analyzeLongs(longs);
             System.out.println(stats.print());
         }
     }

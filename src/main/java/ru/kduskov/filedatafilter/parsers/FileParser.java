@@ -10,13 +10,13 @@ import java.util.List;
 import static java.lang.String.format;
 
 public class FileParser {
-    public static FileProcessingStatus parseInLists(String fileName, List<String> strings, List<Integer> ints, List<Float> floats) {
+    public static FileProcessingStatus parseInLists(String fileName, List<String> strings, List<Long> longs, List<Float> floats) {
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
             for (String line; (line = br.readLine()) != null; ) {
                 ContentType type = ContentTypeResolver.resolveType(line);
                 switch (type){
-                    case INT:
-                        ints.add(Integer.valueOf(line));
+                    case LONG:
+                        longs.add(Long.valueOf(line));
                         break;
                     case FLOAT:
                         floats.add(Float.valueOf(line));
