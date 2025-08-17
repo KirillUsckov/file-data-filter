@@ -29,8 +29,8 @@ public class Main {
      * -a - опция для задания режима добавления строк в существующие файлы (по-умолчанию файлы перезаписываются)
      * -s - вывод в консоль краткой статистики по каждому типу данных (только количество элементов записанных в файлы)
      * -f - вывод в консоль полной статистики по каждому типу данных:
-     *      - для чисел дополнительно содержит min и max, sum и avg
-     *      - для строк - дополнительно содержит размер самой короткой строки и самой длинной
+     * - для чисел дополнительно содержит min и max, sum и avg
+     * - для строк - дополнительно содержит размер самой короткой строки и самой длинной
      * Например -o /some/path -p result_ задают вывод в файлы
      * /some/path/result_integers.txt, /some/path/result_strings.txt и тд.
      *
@@ -41,16 +41,16 @@ public class Main {
     }
 
     private static int run(String[] args) {
-        CommandLineParseResult parsed = CommandLineArgsParser.parse(args);
-        parsed.getWarnings().forEach(log::warn);
-        parsed.getErrors().forEach(log::error);
+        CommandLineParseResult lineParseResult = CommandLineArgsParser.parse(args);
+        lineParseResult.getWarnings().forEach(log::warn);
+        lineParseResult.getErrors().forEach(log::error);
 
-        if (parsed.hasErrors()) {
+        if (lineParseResult.hasErrors()) {
             return ERROR_CODE;
         }
 
-        Map<CommandLineArg, String> options = parsed.getOptions();
-        List<String> fileNames = parsed.getFiles();
+        Map<CommandLineArg, String> options = lineParseResult.getOptions();
+        List<String> fileNames = lineParseResult.getFiles();
         ResultModel resultModel = getResultModel(options);
 
         List<String> strings = new ArrayList<>();
@@ -68,8 +68,11 @@ public class Main {
 
         analyzeStatistics(resultModel, strings, floats, longs);
 
-        return (!failedFiles.isEmpty()) ? SOME_ERRORS_CODE :
-                (!missingFiles.isEmpty()) ? SOME_ERRORS_CODE : OK_CODE;
+        if (!failedFiles.isEmpty())
+            return SOME_ERRORS_CODE;
+        if (!missingFiles.isEmpty())
+            return SOME_ERRORS_CODE;
+        return OK_CODE;
     }
 
     private static int processFiles(List<String> fileNames, List<String> strings, List<Long> longs, List<Float> floats, List<String> missingFiles, List<String> failedFiles) {
@@ -83,17 +86,17 @@ public class Main {
                     failedFiles.add(fileName);
                     break;
                 default:
-                    log.info("File parsing done");
+                    log.info("File '{}' parsing done", fileName);
             }
+        }
 
-            if (!missingFiles.isEmpty())
-                log.warn("Missing files: " + String.join(", ", missingFiles));
-            if (!failedFiles.isEmpty())
-                log.error("Failed to process: " + String.join(", ", failedFiles));
-            if (fileNames.size() == missingFiles.size() + failedFiles.size()) {
-                log.error("All files were broken");
-                return ERROR_CODE;
-            }
+        if (!missingFiles.isEmpty())
+            log.warn("Missing files: " + String.join(", ", missingFiles));
+        if (!failedFiles.isEmpty())
+            log.error("Failed to process: " + String.join(", ", failedFiles));
+        if (fileNames.size() == missingFiles.size() + failedFiles.size()) {
+            log.error("All files were broken");
+            return ERROR_CODE;
         }
         return OK_CODE;
     }
@@ -108,19 +111,19 @@ public class Main {
         if (!strings.isEmpty()) {
             path = Path.of(filesPath, resultModel.getFilesPrefix() + STRING_FILE_NAME);
             if (!FileUtils.writeListToFile(resultModel.getWriteMode(), path, strings)) {
-                log.error(" Strings file wasn't written: " + path);
+                log.error("Strings file wasn't written: " + path);
             }
         }
         if (!longs.isEmpty()) {
             path = Path.of(filesPath, resultModel.getFilesPrefix() + INT_FILE_NAME);
             if (!FileUtils.writeListToFile(resultModel.getWriteMode(), path, longs)) {
-                log.error(" Ints file wasn't written: " + path);
+                log.error("Longs file wasn't written: " + path);
             }
         }
         if (!floats.isEmpty()) {
             path = Path.of(filesPath, resultModel.getFilesPrefix() + FLOAT_FILE_NAME);
             if (!FileUtils.writeListToFile(resultModel.getWriteMode(), path, floats)) {
-                log.error(" Floats file wasn't written: " + path);
+                log.error("Floats file wasn't written: " + path);
             }
         }
     }
@@ -128,7 +131,7 @@ public class Main {
     private static void analyzeStatistics(ResultModel
                                                   resultModel, List<String> strings, List<Float> floats, List<Long> longs) {
         if (resultModel.getReportType() != null) {
-            Statistics stats = Statistics.getInstance(resultModel.getReportType());
+            Statistics stats = new Statistics(resultModel.getReportType());
             stats.analyzeStrings(strings);
             stats.analyzeFloat(floats);
             stats.analyzeLongs(longs);

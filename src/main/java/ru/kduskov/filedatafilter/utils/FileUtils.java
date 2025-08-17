@@ -4,12 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import ru.kduskov.filedatafilter.enums.WriteMode;
 
 import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.List;
-import java.util.Objects;
 
 import static java.lang.String.format;
 
@@ -40,7 +38,7 @@ public final class FileUtils {
                     w.write(String.valueOf(line));
                     w.newLine(); // Writes a new line character
                 }
-                log.info(format("File '%s' was written successfully", fullPath.getFileName()));
+                log.info("File '{}' was written successfully", fullPath.getFileName());
                 return true;
             }
 

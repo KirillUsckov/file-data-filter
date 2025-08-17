@@ -1,20 +1,20 @@
 package ru.kduskov.filedatafilter.parsers;
 
-import ru.kduskov.filedatafilter.enums.ContentType;
 import ru.kduskov.filedatafilter.enums.FileProcessingStatus;
 import ru.kduskov.filedatafilter.utils.ContentTypeResolver;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
 import java.util.List;
-
-import static java.lang.String.format;
 
 public class FileParser {
     public static FileProcessingStatus parseInLists(String fileName, List<String> strings, List<Long> longs, List<Float> floats) {
-        try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
+        try (BufferedReader br = Files.newBufferedReader(Path.of(fileName), StandardCharsets.UTF_8)) {
             for (String line; (line = br.readLine()) != null; ) {
-                ContentType type = ContentTypeResolver.resolveType(line);
-                switch (type){
+                switch (ContentTypeResolver.resolveType(line)){
                     case LONG:
                         longs.add(Long.valueOf(line));
                         break;
@@ -26,7 +26,7 @@ public class FileParser {
                 }
             }
             return FileProcessingStatus.OK;
-        } catch (FileNotFoundException e) {
+        } catch (NoSuchFileException e) {
             return FileProcessingStatus.FILE_IS_MISSING;
         } catch (IOException e) {
             return FileProcessingStatus.FAILED_TO_PROCESS;

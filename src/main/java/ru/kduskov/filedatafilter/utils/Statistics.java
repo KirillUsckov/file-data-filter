@@ -11,35 +11,22 @@ import java.util.List;
 import static java.lang.String.format;
 
 public class Statistics {
-    private static Statistics instance;
     private ReportType reportType;
     private StringStat stringStat;
     private LongStat longStat;
     private FloatStat floatStat;
 
-    private Statistics(ReportType reportType) {
+    public Statistics(ReportType reportType) {
         this.reportType = reportType;
         this.stringStat = new StringStat();
         this.longStat = new LongStat();
         this.floatStat = new FloatStat();
     }
 
-    public static Statistics getInstance(ReportType reportType) {
-        if(instance == null) {
-            instance = new Statistics(reportType);
-        }
-        return instance;
-    }
-
-    public static Statistics getInstance() {
-        if (instance == null)
-            instance = new Statistics(ReportType.SHORT);
-        return instance;
-    }
 
     public void analyzeStrings(List<String> strings) {
         this.stringStat.setAmount(strings.size());
-        if (reportType == ReportType.FULL) {
+        if (reportType == ReportType.FULL && !strings.isEmpty()) {
             this.stringStat.setMinLength(strings.stream().min(Comparator.comparing(String::length)).orElseThrow().length());
             this.stringStat.setMaxLength(strings.stream().max(Comparator.comparing(String::length)).orElseThrow().length());
         }
@@ -47,7 +34,7 @@ public class Statistics {
 
     public void analyzeLongs(List<Long> longs) {
         this.longStat.setAmount(longs.size());
-        if (reportType == ReportType.FULL) {
+        if (reportType == ReportType.FULL && !longs.isEmpty()) {
             this.longStat.setMin(longs.stream().mapToLong(Long::valueOf).min().orElseThrow());
             this.longStat.setMax(longs.stream().mapToLong(Long::valueOf).max().orElseThrow());
             this.longStat.setSum(longs.stream().mapToLong(Long::valueOf).sum());
@@ -57,7 +44,7 @@ public class Statistics {
 
     public void analyzeFloat(List<Float> floats) {
         this.floatStat.setAmount(floats.size());
-        if (reportType == ReportType.FULL) {
+        if (reportType == ReportType.FULL && !floats.isEmpty()) {
             this.floatStat.setMin(floats.stream().min(Comparator.naturalOrder()).orElseThrow());
             this.floatStat.setMax(floats.stream().max(Comparator.naturalOrder()).orElseThrow());
             this.floatStat.setSum(floats.stream().mapToDouble(Float::floatValue).sum());
@@ -68,13 +55,13 @@ public class Statistics {
     public String print() {
         if(reportType == ReportType.SHORT){
             return format(
-                    "Strings count : %s%nInts count: %s%nFloats count: %s",
+                    "Strings count : %s%nLongs count: %s%nFloats count: %s",
                     stringStat.getAmount(),
                     longStat.getAmount(),
                     floatStat.getAmount());
         } else {
             return format("Strings data:%n\tcount: %s, min length: %s, max length: %s%n" +
-                    "Ints data:%n\tcount: %s, min value: %s, max value: %s, avg value: %s, sum: %s%n" +
+                    "Longs data:%n\tcount: %s, min value: %s, max value: %s, avg value: %s, sum: %s%n" +
                     "Floats data:%n\tcount: %s, min value: %s, max value: %s, avg value: %s, sum: %s",
                     stringStat.getAmount(), stringStat.getMinLength(), stringStat.getMaxLength(),
                     longStat.getAmount(), longStat.getMin(), longStat.getMax(), longStat.getAvg(), longStat.getSum(),
