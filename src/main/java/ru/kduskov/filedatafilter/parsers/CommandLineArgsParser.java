@@ -1,6 +1,5 @@
 package ru.kduskov.filedatafilter.parsers;
 
-import lombok.extern.slf4j.Slf4j;
 import ru.kduskov.filedatafilter.enums.CommandLineArg;
 import ru.kduskov.filedatafilter.models.CommandLineParseResult;
 import ru.kduskov.filedatafilter.utils.FileUtils;
