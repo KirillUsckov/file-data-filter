@@ -7,8 +7,4 @@ import lombok.Setter;
 @Setter
 class BaseStat {
     protected int amount;
-
-    public void add() {
-        amount++;
-    }
 }

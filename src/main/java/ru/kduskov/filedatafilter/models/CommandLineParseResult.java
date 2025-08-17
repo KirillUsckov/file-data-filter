@@ -1,6 +1,5 @@
 package ru.kduskov.filedatafilter.models;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import ru.kduskov.filedatafilter.enums.CommandLineArg;
 
@@ -24,10 +23,6 @@ public class CommandLineParseResult {
         this.warnings = Collections.unmodifiableList(warnings);
         this.errors = Collections.unmodifiableList(errors);
     }
-    public Map<CommandLineArg, String> getOptions() { return options; }
-    public List<String> getFiles() { return files; }
-    public List<String> getWarnings() { return warnings; }
-    public List<String> getErrors() { return errors; }
 
     public boolean hasWarnings() { return !warnings.isEmpty(); }
     public boolean hasErrors()   { return !errors.isEmpty(); }
