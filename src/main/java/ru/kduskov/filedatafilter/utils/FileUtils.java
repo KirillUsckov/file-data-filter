@@ -29,13 +29,21 @@ public final class FileUtils {
                 ? new OpenOption[]{StandardOpenOption.CREATE, StandardOpenOption.APPEND}
                 : new OpenOption[]{StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING};
 
-        try (BufferedWriter w = Files.newBufferedWriter(fullPath, StandardCharsets.UTF_8, opts)) {
-            for (T line : input) {
-                w.write(String.valueOf(line));
-                w.newLine(); // Writes a new line character
+
+        try {
+            Path parent = fullPath.getParent();
+            if (parent != null) {
+                Files.createDirectories(parent);
             }
-            log.info(format("File '%s' was written successfully", fullPath.getFileName()));
-            return true;
+            try (BufferedWriter w = Files.newBufferedWriter(fullPath, StandardCharsets.UTF_8, opts)) {
+                for (T line : input) {
+                    w.write(String.valueOf(line));
+                    w.newLine(); // Writes a new line character
+                }
+                log.info(format("File '%s' was written successfully", fullPath.getFileName()));
+                return true;
+            }
+
         } catch (IOException e) {
             return false;
         }

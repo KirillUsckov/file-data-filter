@@ -18,6 +18,9 @@ import static ru.kduskov.filedatafilter.constants.DefaultFileNames.*;
 
 @Slf4j
 public class Main {
+    private static final int OK_CODE = 0;
+    private static final int SOME_ERRORS_CODE = 1;
+    private static final int ERROR_CODE = 2;
 
     /**
      * Доступные параметры:
@@ -26,20 +29,24 @@ public class Main {
      * -a - опция для задания режима добавления строк в существующие файлы (по-умолчанию файлы перезаписываются)
      * -s - вывод в консоль краткой статистики по каждому типу данных (только количество элементов записанных в файлы)
      * -f - вывод в консоль полной статистики по каждому типу данных:
-     *          - для чисел дополнительно содержит min и max, sum и avg
-     *          - для строк - дополнительно содержит размер самой короткой строки и самой длинной
+     * - для чисел дополнительно содержит min и max, sum и avg
+     * - для строк - дополнительно содержит размер самой короткой строки и самой длинной
      * Например -o /some/path -p result_ задают вывод в файлы
      * /some/path/result_integers.txt, /some/path/result_strings.txt и тд.
+     *
      * @param args
      */
     public static void main(String[] args) {
+        System.exit(run(args));
+    }
+
+    private static int run(String[] args) {
         CommandLineParseResult parsed = CommandLineArgsParser.parse(args);
         parsed.getWarnings().forEach(log::warn);
         parsed.getErrors().forEach(log::error);
 
         if (parsed.hasErrors()) {
-            System.exit(2);
-            return;
+            return ERROR_CODE;
         }
 
         Map<CommandLineArg, String> options = parsed.getOptions();
@@ -52,33 +59,47 @@ public class Main {
         List<String> missingFiles = new ArrayList<>();
         List<String> failedFiles = new ArrayList<>();
 
-        for (String fileName : fileNames) {
-            FileProcessingStatus status = FileParser.parseInLists(fileName, strings, longs, floats);
-            if (status == FileProcessingStatus.FILE_IS_MISSING)
-                missingFiles.add(fileName);
-            else if (status == FileProcessingStatus.FAILED_TO_PROCESS)
-                failedFiles.add(fileName);
-        }
-
-        if (!missingFiles.isEmpty())
-            log.warn("Missing files: " + String.join(", ", missingFiles));
-        if (!failedFiles.isEmpty())
-            log.error("Failed to process: " + String.join(", ", failedFiles));
-        if (fileNames.size() == missingFiles.size() + failedFiles.size()) {
-            log.error(" All files were broken");
-            System.exit(2);
+        int resultCode = processFiles(fileNames, strings, longs, floats, missingFiles, failedFiles);
+        if (resultCode == ERROR_CODE) {
+            return resultCode;
         }
 
         writeDataInFiles(resultModel, strings, floats, longs);
 
         analyzeStatistics(resultModel, strings, floats, longs);
 
-        int exitCode = (!failedFiles.isEmpty()) ? 1 :
-                (!missingFiles.isEmpty()) ? 1 : 0;
-        System.exit(exitCode);
+        return (!failedFiles.isEmpty()) ? SOME_ERRORS_CODE :
+                (!missingFiles.isEmpty()) ? SOME_ERRORS_CODE : OK_CODE;
     }
 
-    private static void writeDataInFiles(ResultModel resultModel, List<String> strings, List<Float> floats, List<Long> longs) {
+    private static int processFiles(List<String> fileNames, List<String> strings, List<Long> longs, List<Float> floats, List<String> missingFiles, List<String> failedFiles) {
+        for (String fileName : fileNames) {
+            FileProcessingStatus status = FileParser.parseInLists(fileName, strings, longs, floats);
+            switch (status) {
+                case FILE_IS_MISSING:
+                    missingFiles.add(fileName);
+                    break;
+                case FAILED_TO_PROCESS:
+                    failedFiles.add(fileName);
+                    break;
+                default:
+                    log.info("File parsing done");
+            }
+
+            if (!missingFiles.isEmpty())
+                log.warn("Missing files: " + String.join(", ", missingFiles));
+            if (!failedFiles.isEmpty())
+                log.error("Failed to process: " + String.join(", ", failedFiles));
+            if (fileNames.size() == missingFiles.size() + failedFiles.size()) {
+                log.error("All files were broken");
+                return ERROR_CODE;
+            }
+        }
+        return OK_CODE;
+    }
+
+    private static void writeDataInFiles(ResultModel
+                                                 resultModel, List<String> strings, List<Float> floats, List<Long> longs) {
         String filesPath = resultModel.getResultPath();
         filesPath = (filesPath == null) ? System.getProperty("user.dir") : filesPath;
 
@@ -104,7 +125,8 @@ public class Main {
         }
     }
 
-    private static void analyzeStatistics(ResultModel resultModel, List<String> strings, List<Float> floats, List<Long> longs) {
+    private static void analyzeStatistics(ResultModel
+                                                  resultModel, List<String> strings, List<Float> floats, List<Long> longs) {
         if (resultModel.getReportType() != null) {
             Statistics stats = Statistics.getInstance(resultModel.getReportType());
             stats.analyzeStrings(strings);
