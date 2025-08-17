@@ -40,7 +40,7 @@ java -jar target/file-data-filter-1.0.jar input1.txt input2.txt
 * изменения режима записи на добавление строк к существующим файлам
 * вывода полной статистики в консоли
 ```bash
-java -jar target/file-data-filter-1.0.jar \
+java -jar path/to/jar/file-data-filter-1.0.jar \
   -o ./out -p result_ -a -f \
   data1.txt data2.txt
 ```
