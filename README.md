@@ -53,7 +53,8 @@ java -jar path/to/jar/file-data-filter-1.0.jar \
 
 **Запись результатов** Запись через `Files.newBufferedWriter(…, UTF-8, CREATE+APPEND|TRUNCATE_EXISTING)`. Режим -a включает `APPEND` режим записи - строки добавляются к существующему файлу.
 
-**Определение типов** Опредление осуществяется посредством попытки парсинга полученной строки: `Long.parseLong` -> `Float.parseFloat` -> иначе `Строка`.
+**Определение типов** Опредление осуществяется посредством попытки парсинга полученной строки: 
+`Long.parseLong` -> `Float.parseFloat` -> иначе `Строка`.
 
 ## Коды выхода
 
@@ -85,7 +86,7 @@ java -jar path/to/jar/file-data-filter-1.0.jar \
 </dependency>
 ```
 
-* Logback Classic 1.5.6 — реализация логирования по умолчанию.
+* Logback Classic 1.5.6 — реализация логирования
 ```maven
 <dependency>
   <groupId>ch.qos.logback</groupId>
