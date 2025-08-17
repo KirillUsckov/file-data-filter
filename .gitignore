@@ -1,6 +1,12 @@
 target/
-!.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
+# Maven wrapper — должен быть в VCS
+!/mvnw
+!/mvnw.cmd
+!/.mvn/wrapper/maven-wrapper.jar
+!/.mvn/wrapper/maven-wrapper.properties
+
+# Кэши враппера не коммитим
+/.mvn/wrapper/dists/!**/src/main/**/target/
 !**/src/test/**/target/
 
 ### IntelliJ IDEA ###
