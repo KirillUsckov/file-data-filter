@@ -58,10 +58,10 @@ public final class CommandLineArgsParser {
             }
             return i;
         }
-        if (options.containsKey(clArg)) { // дубликаты — предупреждение, берём последнее значение
+        if (options.containsKey(clArg)) {
             warnings.add(format(DUPLICATED_VALUE_LAST_ONE_APPLIED, arg));
         }
-        if (!clArg.isValueRequired()) { // значение не нужно - идем дальше по циклу
+        if (!clArg.isValueRequired()) {
             options.put(clArg, EMPTY);
             return i;
         }
@@ -73,8 +73,6 @@ public final class CommandLineArgsParser {
         i++;
         return i;
     }
-
-
 
     private static void parseFileArgument(String arg, List<String> files, List<String> warnings) {
         if (FileUtils.isValidPath(arg)) {

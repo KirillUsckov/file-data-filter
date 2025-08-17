@@ -13,13 +13,14 @@ import static java.lang.String.format;
 
 @Slf4j
 public final class FileUtils {
+
     public static boolean isValidPath(String path) {
         try {
             Paths.get(path);
+            return true;
         } catch (InvalidPathException | NullPointerException ex) {
             return false;
         }
-        return true;
     }
 
     public static <T> boolean writeListToFile(WriteMode writeMode, Path fullPath, List<T> input) {
@@ -36,7 +37,7 @@ public final class FileUtils {
             try (BufferedWriter w = Files.newBufferedWriter(fullPath, StandardCharsets.UTF_8, opts)) {
                 for (T line : input) {
                     w.write(String.valueOf(line));
-                    w.newLine(); // Writes a new line character
+                    w.newLine();
                 }
                 log.info("File '{}' was written successfully", fullPath.getFileName());
                 return true;

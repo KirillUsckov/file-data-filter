@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 public class FileParser {
+
     public static FileProcessingStatus parseInLists(String fileName, List<String> strings, List<Long> longs, List<Float> floats) {
         try (BufferedReader br = Files.newBufferedReader(Path.of(fileName), StandardCharsets.UTF_8)) {
             for (String line; (line = br.readLine()) != null; ) {
@@ -31,6 +32,6 @@ public class FileParser {
         } catch (IOException e) {
             return FileProcessingStatus.FAILED_TO_PROCESS;
         }
-
     }
+
 }

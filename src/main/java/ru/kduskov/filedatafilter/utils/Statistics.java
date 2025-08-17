@@ -11,10 +11,10 @@ import java.util.List;
 import static java.lang.String.format;
 
 public class Statistics {
-    private ReportType reportType;
-    private StringStat stringStat;
-    private LongStat longStat;
-    private FloatStat floatStat;
+    private final ReportType reportType;
+    private final StringStat stringStat;
+    private final LongStat longStat;
+    private final FloatStat floatStat;
 
     public Statistics(ReportType reportType) {
         this.reportType = reportType;
@@ -22,7 +22,6 @@ public class Statistics {
         this.longStat = new LongStat();
         this.floatStat = new FloatStat();
     }
-
 
     public void analyzeStrings(List<String> strings) {
         this.stringStat.setAmount(strings.size());
